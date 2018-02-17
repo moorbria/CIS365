@@ -29,6 +29,7 @@ words = ""
 #print(syllablesDict['the'])
 for line in f:
 	#print(line, end='')
+	totalSentences += len(re.split(r'[.?!]\s*', line))	
 	line = re.sub('[^0-9a-zA-Z]+', ' ', line) 
 	for word in line.split():
 		totalWords += 1
@@ -42,7 +43,7 @@ for line in f:
 				totalSyllables += 1
 			else:	
 				print(word + ":" + str(syllablesDict[word]))
-				word=word
+				totalSyllables += syllablesDict[word]
 		except KeyError:
 			try:
 				if word.endswith("es") and syllablesDict.get(word[:-2]) is not None:
@@ -65,6 +66,7 @@ for line in f:
 					totalSyllables += syllablesDict[word[:-1]]
 				elif word.endswith("ed")and syllablesDict.get(word[:-2]) is not None:
 					print("Removing 'ed' from " + word)
+					words += word + " "
 					print(word + ":" + str(syllablesDict[word[:-2]]))
 					totalSyllables += syllablesDict[word[:-2]]
 			except KeyError:
@@ -72,6 +74,10 @@ for line in f:
 				print("Making up syllable count"+ str(math.ceil(len(word)/4)))
 				misses += 1
 				print("Key: '" + word + "' not found")
-			
+readability = 206.835 - 1.015 * (totalWords/totalSentences) - 84.6 * (totalSyllables/totalWords)
+
 print("Misses: " + str(misses))
 print("Words: " + str(totalWords))
+print("Total Syllables: " + str(totalSyllables))
+print("Total Sentences: " + str(totalSentences))
+print("Readability: " + str(readability))
