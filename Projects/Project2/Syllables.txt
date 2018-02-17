@@ -27922,7 +27922,6 @@ pickax=pick+ax
 pickaxe=pick+axe
 pickaxes=pick+ax+es
 pickaback=pick+a+back
-picked=pick+ed
 picker=pick+er
 pickerel=pick+er+el
 picket=pick+et

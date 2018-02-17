@@ -21,11 +21,11 @@ model_short_training: models/model_short_training.ckpt.meta
 
 models/model_long_training.ckpt.meta: data/${FILE} ${SOURCES_FOR_TRAINING}
 	mkdir -p models/
-	python3 -m tsmlstarterbot.train --model_name model_long_training --data data/${FILE} --games_limit 413 --steps 50000 --seed ${SEED}
+	python3 -m tsmlstarterbot.train --model_name model_long_training --data data/${FILE} --games_limit 500 --steps 14500 --seed ${SEED}
 
 models/model_short_training.ckpt.meta: data/${FILE} ${SOURCES_FOR_TRAINING}
 	mkdir -p models/
-	python3	 -m tsmlstarterbot.train --model_name model_short_training --data data/${FILE} --games_limit 100 --steps 500 --seed ${SEED}
+	python3	 -m tsmlstarterbot.train --model_name model_short_training --data data/${FILE} --games_limit 10 --steps 500 --seed ${SEED}
 
 clean_model:
 	rm -rf models
