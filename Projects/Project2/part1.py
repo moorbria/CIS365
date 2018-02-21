@@ -32,11 +32,11 @@ for line in f:
 	totalSentences += len(re.split(r'[.?!]\s*', line))	
 	line = re.sub('[^0-9a-zA-Z]+', ' ', line) 
 	for word in line.split():
+		wordFound = True
 		totalWords += 1
 		#word = word.replace('\ufeff', "")
 		word = word.lower()
 		word = re.sub('[^A-Za-z0-9]+', '', word) # Removes puncuations
-		
 
 		try:
 			if len(word) < 4:
@@ -45,37 +45,73 @@ for line in f:
 				print(word + ":" + str(syllablesDict[word]))
 				totalSyllables += syllablesDict[word]
 		except KeyError:
+			wordFound = False	
+
+		if not wordFound:
 			try:
 				if word.endswith("es") and syllablesDict.get(word[:-2]) is not None:
 					print("Removing 'es' from " + word)
 					print("Adding 1 syllable")
 					print(word + ":" + str(syllablesDict[word[:-2]]))
 					totalSyllables += syllablesDict[word[:-2]] + 1
-				elif word.endswith("s")and syllablesDict.get(word[:-1]) is not None:
+				elif word.endswith("s") and syllablesDict.get(word[:-1]) is not None:
 					print("Removing 's' from " + word)
 					print(word + ":" + str(syllablesDict[word[:-1]]))
 					totalSyllables += syllablesDict[word[:-1]]
-				elif word.endswith("ing")and syllablesDict.get(word[:-3]) is not None:
+				elif word.endswith("ing") and syllablesDict.get(word[:-3]) is not None:
 					print("Removing 'ing' from " + word)
 					print("Adding 1 syllable")
 					print(word + ":" + str(syllablesDict[word[:-3]]))
 					totalSyllables += syllablesDict[word[:-3]] + 1
-				elif word.endswith("ed")and syllablesDict.get(word[:-1]) is not None:
+				elif word.endswith("ed") and syllablesDict.get(word[:-1]) is not None:
 					print("Removing 'd' from " + word)
 					print(word + ":" + str(syllablesDict[word[:-1]]))
 					totalSyllables += syllablesDict[word[:-1]]
-				elif word.endswith("ed")and syllablesDict.get(word[:-2]) is not None:
+				elif word.endswith("ed") and syllablesDict.get(word[:-2]) is not None:
 					print("Removing 'ed' from " + word)
-					words += word + " "
 					print(word + ":" + str(syllablesDict[word[:-2]]))
 					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("er") and syllablesDict.get(word[:-1]) is not None:
+					print("Removing 'r' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-1]]))
+					totalSyllables += syllablesDict[word[:-1]]
+				elif word.endswith("er") and syllablesDict.get(word[:-2]) is not None:
+					print("Removing 'er' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-2]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("ed") and syllablesDict.get(word[:-3]) is not None:
+					print("Removing 'ed' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-3]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("ed") and syllablesDict.get(word[:-2]) is not None:
+					print("Removing 'ed' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-2]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("ed") and syllablesDict.get(word[:-2]) is not None:
+					print("Removing 'ed' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-2]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("ed") and syllablesDict.get(word[:-2]) is not None:
+					print("Removing 'ed' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-2]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				elif word.endswith("ed") and syllablesDict.get(word[:-2]) is not None:
+					print("Removing 'ed' from " + word)
+					print(word + ":" + str(syllablesDict[word[:-2]]))
+					totalSyllables += syllablesDict[word[:-2]]
+				else:
+					raise KeyError
 			except KeyError:
+				print("Making up syllable count"+ str(math.ceil(len(word)/4)))
 				totalSyllables += math.ceil(len(word)/4)
 				print("Making up syllable count"+ str(math.ceil(len(word)/4)))
 				misses += 1
+				words += word + " "
 				print("Key: '" + word + "' not found")
+
 readability = 206.835 - 1.015 * (totalWords/totalSentences) - 84.6 * (totalSyllables/totalWords)
 
+print("Missed words:" + words)
 print("Misses: " + str(misses))
 print("Words: " + str(totalWords))
 print("Total Syllables: " + str(totalSyllables))

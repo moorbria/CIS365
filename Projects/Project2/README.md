@@ -4,6 +4,8 @@
 
 1. How does the readability of literature in a specific category (long-form books, news articles, etc) change over the course of time? Speculate on why this occurs?
 
+
+
 2. What differences do you notice in readability between modern sources of information? (e.g. news articles, versus long format stories, versus Twitter, etc) Are there differences in the same class of article (e.g. two news sources)? If so, why might this occur? Be careful if trying to draw conclusions from one example.
 
 3. Optional Did you find any curious patterns that arose in certain classes of texts? Speculate on why this might occur.
