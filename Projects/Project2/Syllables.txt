@@ -3610,6 +3610,7 @@ bhutan=bhu+tan
 bialy=bia+ly
 bib=bib
 bib=bib
+bible=bib+le
 bibliog=bibliog
 bibber=bib+ber
 bibbing=bib+bing
