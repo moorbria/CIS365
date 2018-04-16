@@ -7,35 +7,13 @@ from tflearn.layers.estimator import regression
 from statistics import median, mean
 from collections import Counter
 
-LR = 1e-3
+LR = 1
 
 env = gym.make('RocketLander-v0')
 env.reset()
-goal_steps = 500
-score_requirement = 3500
-initial_games = 100000
-
-def some_random_games():
-
-    for episode in range(initial_games):
-      observation = env.reset()
-      total_reward = 0
-      print(episode % 10)
-      if episode % 1000 is 0:
-        print(str((initial_games/episode)*100) + "% Complete")
-      for t in range(goal_steps):
-        #env.render()
-        action = env.action_space.sample()
-        
-        observation, reward, done, info = env.step(action)
-
-        total_reward += reward
-        #print("Action: {} Observations Size:{} score: {}".format(action,observation.shape,reward))
-        if done:
-          break
-      print("Total Reward: " + str(total_reward))
-
-#some_random_games()
+goal_steps = 750
+score_requirement = 1600
+initial_games = 2500
 
 def initial_population():
     # [OBS, MOVES]
@@ -48,7 +26,7 @@ def initial_population():
 
     # iterate through however many games we want:
     for episode in range(initial_games):
-        if episode % 1000 is 0 and episode != 0:
+        if episode % 25 is 0 and episode != 0:
           print(str(episode/initial_games*100) + "% Complete")
 
         score = 0
@@ -58,14 +36,19 @@ def initial_population():
         prev_observation = []
         # for each frame in 200
         for episode in range(goal_steps):
+            #env.render()
             a = float(random.randrange(-100, 100))/100
-            b = float(random.randrange(0, 100))/100
+            b = float(random.randrange(-100, 100))/100
             c = float(random.randrange(-100, 100))/100
             action = [a, b, c]
+            
+
+
+
 
             # do it!
             observation, reward, done, info = env.step(action)
-
+    
 
             # normailize data
             norm_observation = normalize(observation)
@@ -73,22 +56,37 @@ def initial_population():
 
             # custom reward function
             reward = 0
-            # Reward for staying upright
-            reward = 2 - abs(.5 - norm_observation[2])
+
+            # if angle is low
+            if abs(observation[2]) < .5: 
+                reward += 5
+  
+            # if you are in the middle of the map
+            reward += (1 - abs(observation[0]))*3 # x position
+
+            # if you are near the bottom and your speed is low
+            if observation[1] < -1.2 and observation[8] > 2.5 and observation[8] < 3.8:
+              reward += 3 
+
             
-            if observation[1] < -.5:
-                reward += 3 - abs(.5 - norm_observation[2])
+            #if observation[1] < -1.3 and abs(observation[8]
+              
+            # Reward for staying upright
+            #reward = (.5 - abs(.5 - norm_observation[2]))*2
+            
+            #if observation[1] < -.5:
+            #    reward += 3 - abs(.5 - norm_observation[2])
 
             # Reward for angular velocity (don't spin that fast)
-            if observation[9] < 35:
-                reward += 4 - abs(.5 - norm_observation[9])
+            #if observation[9] < 35:
+            #    reward += .5 - abs(.5 - norm_observation[9])
 
-            reward += 2 - abs((.5 - norm_observation[0]))
+            #reward += .5 - abs((.5 - norm_observation[0]))
                        
             
             # Reward for low speed at the end and no spin
             #if observation[1] < -.5: # y position is in the last quadrant
-                #reward -= abs(observation[7]) 
+            #    reward -= abs(observation[7]) 
             # notice that the observation is returned FROM the action
             # so we'll store the previous observation here, pairing
             # the prev observation to the action we'll take.
@@ -106,6 +104,7 @@ def initial_population():
         # reached.
         #print(score)
         if score >= score_requirement:
+            print(score)
             accepted_scores.append(score)
             for data in game_memory:
                 # convert to one-hot (this is the output layer for our neural network)
@@ -140,22 +139,22 @@ def neural_network_model(input_size):
 
     network = input_data(shape=[None, input_size, 1], name='input')
 
-    network = fully_connected(network, 128, activation='softmax')
-    network = dropout(network, 0.8)
+    #network = fully_connected(network, 128, activation='softmax')
+    #network = dropout(network, 0.8)
+    
+    #network = fully_connected(network, 256, activation='softplus')
+    #network = dropout(network, 0.8)
 
-    network = fully_connected(network, 256, activation='softmax')
-    network = dropout(network, 0.8)
+    #network = fully_connected(network, 30, activation='softmax')
+    #network = dropout(network, 0.8)
 
-    network = fully_connected(network, 512, activation='softmax')
-    network = dropout(network, 0.8)
+    #network = fully_connected(network, 256, activation='relu')
+    #network = dropout(network, 0.8)
 
-    network = fully_connected(network, 256, activation='softmax')
-    network = dropout(network, 0.8)
+    #network = fully_connected(network, 128, activation='tanh')
+    #network = dropout(network, 0.8)
 
-    network = fully_connected(network, 128, activation='softmax')
-    network = dropout(network, 0.8)
-
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 3, activation='linear')
     network = regression(network, optimizer='adam', learning_rate=LR, loss='categorical_crossentropy', name='targets')
     model = tflearn.DNN(network, tensorboard_dir='log')
 
@@ -193,8 +192,8 @@ def normalize(observation):
   return observation
 
 
-training_data = initial_population()
-#training_data = np.load('saved.npy')
+#training_data = initial_population()
+training_data = np.load('saved.npy')
 model = train_model(training_data)
 #model = neural_network_model(10)
 #model.load('1.model')
@@ -233,6 +232,7 @@ for each_game in range(10):
             #print(model.predict(prev_obs.reshape(-1,len(prev_obs),1)))
             action = model.predict(prev_obs.reshape(-1,len(prev_obs), 1))
             action = action.tolist()[0]
+            print(action)
 
         choices.append(action)
                 
@@ -269,7 +269,7 @@ print("angle_vel min" + str(min(angle_vel)) + " | max: " + str(max(angle_vel)))
 print('Average Score:',sum(scores)/len(scores))
 print('Max Score:', max(scores))
 
-#model.save('1.model')
+model.save('1.model')
 
 
 
